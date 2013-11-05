@@ -1,8 +1,77 @@
 <html>
 <head>
-<script type="text/javascript" src="reservations.js"></script>
 <script type="text/javascript">
-
+	function estimateCost(){
+		var lastName = document.getElementById( "LastNameInput" ).value;
+		if( !validateName( lastName ) ){
+			alert( "Last Name Required" );
+			
+			return;
+		}
+		var firstName = document.getElementById( "firstNameInput" ).value;
+		if( !validateName( firstName ) ){
+			alert( "First Name Required" );
+			
+			return;
+		}
+		var nationality = document.getElementById( "nationalitySelect" ).value;
+		if( !nationality ){
+			alert( "Nationality Required" );
+			
+			return;
+		}
+		var city = getSelectedRadioGroupValue( "cityRadioGroup" );
+		if( !city ){
+			alert( "Please select city" );
+			
+			return;
+		}
+		var days = parseInt( document.getElementById( "daysSelect" ).value );
+		if( !days ){
+			alert( "Please select days" );
+			
+			return;
+		}
+		//var noPassportNationalities = [ document.getElementById( "usa" ).value, document.getElementById( "canada" ).value ];
+		//if( noPassportNationalities.indexOf( nationality ) > -1 ){
+		if( getValuesByClass( "noPassport" ).indexOf( nationality ) > -1 ){
+			alert( firstName + ", you do not require a passport for this trip" );
+			
+		}else{
+			alert( firstName + ", you require a passport for this trip" );
+			
+		}
+		
+		var total = days * 150;
+		//var surchargeCities = [ document.getElementById( "sanFrnacisco" ).value, document.getElementById( "losAngeles" ).value ];
+		//if( surchargeCities.indexOf( city ) > -1 ) total += 200;
+		if( getValuesByClass( "surchargeCity" ).indexOf( city ) > -1 ) total += 200;
+		if( document.getElementById( "firstClassCheckbox" ).checked ) total += 500;
+		if( document.getElementById( "withSpouseCheckbox" ).checked ) total *= 2;
+		
+		alert( firstName + ", your estimated cost for the trip is: $" + total );
+	}
+	function validateName( name ){
+		if( name && /[a-z]/i.test( name ) ) return true;
+			
+		return false;
+	}
+	function getSelectedRadioGroupValue( groupName ){
+		var radioGroup = document.getElementsByName( groupName );
+		for( var i = 0; i < radioGroup.length; i++ ){
+			if( !radioGroup[ i ].checked ) continue;
+			
+			return radioGroup[ i ].value;
+		}
+	}
+	function getValuesByClass( className ){
+		var values = [];
+		var classElements = document.getElementsByClassName( className );
+		for( var i = 0; i < classElements.length; i++ ) values.push( classElements[ i ].value );
+		
+		return values;
+	}
+	
 </script>
 </head>
 
@@ -14,19 +83,20 @@
             <table border="0">
                 <tr>
                     <td width="300px"><strong>Last Name: </strong></td>
-                    <td width="300px"><input type="text" name="txtFirstName" value=" " size="20" /></td>
+                    <td width="300px"><input type="text" id="LastNameInput" value="" size="20" /></td>
                 </tr>
 
                 <tr>
                     <td><strong>First Name: </strong></td>
-                    <td><input type="text" name="txtLastName" value=" " size="20" /></td>
+                    <td><input type="text" id="firstNameInput" value="" size="20" /></td>
                 </tr>
 
                 <tr>
                     <td><strong>Nationality: </strong></td>
-                    <td><select name="selNationality">
-                            <option value="amer">USA</option>
-                            <option value="can">Canada</option>
+                    <td><select id="nationalitySelect">
+                            <option value="">Please Select...</option>
+                            <option id="usa" class="noPassport" value="amer" >USA</option>
+                            <option id="canada" class="noPassport" value="can" >Canada</option>
                             <option value="mex">Mexico</option>
                             <option value="ger">Germany</option>
                             <option value="fra">France</option>
@@ -36,16 +106,19 @@
 
                 <tr>
                     <td><strong>City you wish to visit: </strong></td>
-                    <td><input type="radio" name="radCity" value="New York City" />New York City<br />
-                        <input type="radio" name="radCity" value="Boston" />Boston<br />
-                        <input type="radio" name="radCity" value="San Francisco" />San Francisco ($200 surcharge)<br />
-                        <input type="radio" name="radCity" value="Los Angeles" />Los Angeles ($200 surcharge)<br/>
+                    <td>
+                    	<input type="radio" name="cityRadioGroup" value="" style="display: none;" hidden="hidden" />
+                    	<input type="radio" name="cityRadioGroup" value="New York City" />New York City<br />
+                        <input type="radio" name="cityRadioGroup" value="Boston" />Boston<br />
+                        <input id="sanFrancisco" class="surchargeCity" type="radio" name="cityRadioGroup" value="San Francisco" />San Francisco ($200 surcharge)<br />
+                        <input id="losAngeles" class="surchargeCity" type="radio" name="cityRadioGroup" value="Los Angeles" />Los Angeles ($200 surcharge)<br/>
                     </td>
                 </tr>
 
                 <tr>
                     <td><strong>Number of days ($150 per day): </strong></td>
-                    <td><select name="selNumberDays">
+                    <td><select id="daysSelect">
+                        <option value="">Please Select...</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
                         <option value="5">5</option>
@@ -65,8 +138,8 @@
                 <tr>
                     <td><strong>Other options: </strong></td>
                     <td>
-                        <input type="checkbox" name="chkFirst" />First Class Only ($500 surcharge)<br />
-                        <input type="checkbox" name="chkSpouse" />Traveling with Spouse (All costs doubled)<br />
+                        <input id="firstClassCheckbox" type="checkbox" value="fistClass" />First Class Only ($500 surcharge)<br />
+                        <input id="withSpouseCheckbox" type="checkbox" value="withSpouse"/>Traveling with Spouse (All costs doubled)<br />
                     </td>
                 </tr>
                 <tr>
