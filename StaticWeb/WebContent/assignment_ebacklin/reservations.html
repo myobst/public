@@ -14,8 +14,9 @@
 			
 			return;
 		}
-		var nationality = document.getElementById( "nationalitySelect" ).value;
-		if( !nationality ){
+		var nationalitySelect = document.getElementById( "nationalitySelect" );
+		var nationalityOptionSelected = nationalitySelect.item( nationalitySelect.selectedIndex );
+		if( !nationalityOptionSelected.value ){
 			alert( "Nationality Required" );
 			
 			return;
@@ -34,7 +35,9 @@
 		}
 		//var noPassportNationalities = [ document.getElementById( "usa" ).value, document.getElementById( "canada" ).value ];
 		//if( noPassportNationalities.indexOf( nationality ) > -1 ){
-		if( getValuesByClass( "noPassport" ).indexOf( nationality ) > -1 ){
+		//if( getValuesByClass( "noPassport" ).indexOf( nationality ) > -1 ){
+		var noPassportOptionIds = [ "usa", "canada" ];
+		if( noPassportOptionIds.indexOf( nationality ) > -1 ){
 			alert( firstName + ", you do not require a passport for this trip" );
 			
 		}else{
@@ -77,6 +80,7 @@
 
 <body>
 <table align="left" width="600px" border="0" cellpadding="5px">
+test change
     <tr>
         <td>
         <form name="form1">
