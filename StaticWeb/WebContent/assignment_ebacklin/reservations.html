@@ -1,36 +1,32 @@
 <html>
 <head>
+<script type="text/javascript" src="utils.js"></script>
 <script type="text/javascript">
 
 	//page level vars set once
 	var surchargeCities = [ "San Francisco", "Los Angeles" ];
 	var noPassportNationalities;/* = [ "amer", "can" ];
 	using load event for fun to look up values by class once available in the DOM*/
-	function onLoad(event){
+	window.onload = function(){
 		noPassportNationalities = getValuesByClass( "noPassport" );
 	}
 
 	function estimateCost(){
 		//some basic validation
 		var lastName = document.getElementById( "LastNameInput" ).value;
-		if( !validateName( lastName ) ) 
-			return alert( "Last Name Required" );
+		if( !validateName( lastName ) ) return alert( "Last Name Required" );
 
 		var firstName = document.getElementById( "firstNameInput" ).value;
-		if( !validateName( firstName ) ) 
-			return alert( "First Name Required" );
+		if( !validateName( firstName ) ) return alert( "First Name Required" );
 
 		var selectedNationalityOption = getSelectedOption( "nationalitySelect" );
-		if( !selectedNationalityOption.value )
-			return alert( "Nationality Required" );
+		if( !selectedNationalityOption.value ) return alert( "Nationality Required" );
 	
-		var city = getCheckedRadio( "cityRadioGroup" );
-		if( !city )
-			return alert( "Please select city" );
+		var city = getCheckedRadioValue( "cityRadioGroup" );
+		if( !city ) return alert( "Please select city" );
 			
 		var days = parseInt( document.getElementById( "daysSelect" ).value );
-		if( !days )
-			return alert( "Please select days" );
+		if( !days ) return alert( "Please select days" );
 		
 		//special message
 		if( noPassportNationalities.indexOf( selectedNationalityOption.value ) > -1 ){
@@ -50,36 +46,10 @@
 		//display total
 		alert( firstName + ", your estimated cost for the trip is: $" + total );
 	}
-	function getValuesByClass( className ){
-		var values = [];
-		var classElements = document.getElementsByClassName( className );
-		for( var i = 0; i < classElements.length; i++ ) values.push( classElements[ i ].value );
-		
-		return values;
-	}
-	function validateName( name ){
-		if( name && /[a-z]/i.test( name ) ) return true;
-			
-		return false;
-	}
-	function getSelectedOption( selectId ){
-		var selectElement = document.getElementById( selectId );
-		
-		return selectElement.item( selectElement.selectedIndex );
-	}
-	function getCheckedRadioValue( groupName ){
-		var radioGroup = document.getElementsByName( groupName );
-		for( var i = 0; i < radioGroup.length; i++ ){
-			if( !radioGroup[ i ].checked ) continue;
-			
-			return radioGroup[ i ].value;
-		}
-	}
-	
 </script>
 </head>
 
-<body onload="onLoad(event)">
+<body>
 <table align="left" width="600px" border="0" cellpadding="5px">
     <tr>
         <td>
