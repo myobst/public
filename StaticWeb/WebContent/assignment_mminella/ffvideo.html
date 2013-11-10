@@ -3,34 +3,38 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>FFVideo Tips</title>
-		<script type="text/javascript" src="js/modernizr.custom.35650.js"></script>
+		<!-- script type="text/javascript" src="js/modernizr.custom.35650.js"></script -->
 		<script type="text/javascript">
-		window.onload = function(){
-			alert( "Modernizr.touch say: " + Modernizr.touch + " " + Modernizr.draganddrop );
-			//no legit media-querries for touch support, so using this hack.
-			var touchSupport = 'ontouchstart' in document.documentElement;
-			alert( "what the fuck " + touchSupport );
+		document.addEventListener( 'DOMContentLoaded', onContentLoaded, false );
+		function onContentLoaded( event ){
+			//no legit media-querries for touch support, but this seems to work
+			//note: decided to just use click event for fallback
+			//var touchSupport = 'ontouchstart' in document.documentElement;
 
+		}
+		function onThumbDragStart( event ){
+			event.dataTransfer.setData( "Text", JSON.stringify( getThumbDataset( event.target ) ) );
+		} 
+		//using click event as fallback for dragdrop support issues with 'touch' enabled devices
+		function onThumbClick( event ){
+			loadVideo( getThumbDataset( event.target ) );
+		}
+		function getThumbDataset( thumb ){
+			//dataset not working in IE11 so using getAttribute to manually create, probably a slicker way to do this
+			return thumb.dataset ? thumb.dataset : { "mp4":thumb.getAttribute('data-mp4'), "webm":thumb.getAttribute('data-webm') };
 		}
 		function allowDrop( event ){
 			event.preventDefault();
 		}
-		function onThumbDragStart( event ){
-			if( event.target.dataset ){
-				var data = { "mp4":event.target.dataset.mp4, "webm":event.target.dataset.webm };
-				
-			}else{
-				//dataset not working in IE11 so using getAttribute
-				var data = { "mp4":event.target.getAttribute('data-mp4'), "webm":event.target.getAttribute('data-webm') };
-			}
-			event.dataTransfer.setData( "Text", JSON.stringify( data ) );
-		}
 		function onVideoDrop( event ){
 			event.preventDefault();
-			var data = JSON.parse( event.dataTransfer.getData( "Text" ) );
-			source_mp4.src = data.mp4;
-			source_webm.src = data.webm;  
+			loadVideo( JSON.parse( event.dataTransfer.getData( "Text" ) ) );
+		}
+		function loadVideo( dataset ){
+			source_mp4.src = dataset.mp4;
+			source_webm.src = dataset.webm;  
 			video.load();
+			video.play();
 		}
 		</script>
 	</head>
@@ -41,13 +45,18 @@
 				<h2>Drag Drop Player</h2>
 Drag a thumbnail to the video player. Each thumbnail stores the mp4 and webm urls (in the dataset) which will be set when dropped on the video element.
 				<ul>
-					<li><img draggable="true" ondragstart="onThumbDragStart(event)" data-mp4="content/Brazil_Ilusoes_Optical_illusion_Viral.mp4" data-webm="content/Brazil_Ilusoes_Optical_illusion_Viral.webm" src="content/Brazil_Ilusoes_Optical_illusion_Viral.jpg"/></li>
-					<li><img draggable="true" ondragstart="onThumbDragStart(event)" data-mp4="content/hd_other_sony_the_incredible_game.mp4" data-webm="content/hd_other_sony_the_incredible_game.webm" src="content/hd_other_sony_the_incredible_game.jpg"/></li>
-					<li><img draggable="true" ondragstart="onThumbDragStart(event)" data-mp4="content/lion.mp4" data-webm="content/lion.webm" data-mp4="mp4" data-webm="webm" src="content/lion.jpg"/></li>
-					<li><img draggable="true" ondragstart="onThumbDragStart(event)" data-mp4="content/O_Rewind_90_VF.mp4" data-webm="content/O_Rewind_90_VF.webm" src="content/O_Rewind_90_VF.jpg"/></li>
-					<li><img draggable="true" ondragstart="onThumbDragStart(event)" data-mp4="content/Olay_Warrior.mp4" data-webm="content/Olay_Warrior.webm" src="content/Olay_Warrior.jpg"/></li>
+					<li><img class="videoThumb" ondragstart="onThumbDragStart(event)" draggable="true" onclick="onThumbClick(event)" 
+							data-mp4="content/Brazil_Ilusoes_Optical_illusion_Viral.mp4" data-webm="content/Brazil_Ilusoes_Optical_illusion_Viral.webm" src="content/Brazil_Ilusoes_Optical_illusion_Viral.jpg"/></li>
+					<li><img class="videoThumb" ondragstart="onThumbDragStart(event)" draggable="true" onclick="onThumbClick(event)" 
+							data-mp4="content/hd_other_sony_the_incredible_game.mp4" data-webm="content/hd_other_sony_the_incredible_game.webm" src="content/hd_other_sony_the_incredible_game.jpg"/></li>
+					<li><img class="videoThumb" ondragstart="onThumbDragStart(event)" draggable="true" onclick="onThumbClick(event)" 
+							data-mp4="content/lion.mp4" data-webm="content/lion.webm" data-mp4="mp4" data-webm="webm" src="content/lion.jpg"/></li>
+					<li><img class="videoThumb" ondragstart="onThumbDragStart(event)" draggable="true" onclick="onThumbClick(event)" 
+							data-mp4="content/O_Rewind_90_VF.mp4" data-webm="content/O_Rewind_90_VF.webm" src="content/O_Rewind_90_VF.jpg"/></li>
+					<li><img class="videoThumb" ondragstart="onThumbDragStart(event)" draggable="true" onclick="onThumbClick(event)" 
+							data-mp4="content/Olay_Warrior.mp4" data-webm="content/Olay_Warrior.webm" src="content/Olay_Warrior.jpg"/></li>
 				</ul>
-				<video id="video" ondrop="onVideoDrop(event)" ondragover="allowDrop(event)" width="640" height="360" autoplay="autoplay" controls="controls">
+				<video id="video" ondrop="onVideoDrop(event)" ondragover="allowDrop(event)" controls="controls">
 					<source id="source_mp4" type="video/mp4"/>
 					<source id="source_webm" type="video/webm"/>
 	 			</video>
