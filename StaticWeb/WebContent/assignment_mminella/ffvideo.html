@@ -8,8 +8,8 @@
 		window.onload = function(){
 			alert( "Modernizr.touch say: " + Modernizr.touch + " " + Modernizr.draganddrop );
 			//no legit media-querries for touch support, so using this hack.
-			//var touchSupport = 'ontouchstart' in document.documentElement;
-			//alert( "what the fuck " + touchSupport );
+			var touchSupport = 'ontouchstart' in document.documentElement;
+			alert( "what the fuck " + touchSupport );
 
 		}
 		function allowDrop( event ){
