@@ -2,94 +2,57 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>FFVideo Tips</title>
+		<title>&#161;&#161;webpage&#33;&#33;</title>
 		<link href='http://fonts.googleapis.com/css?family=Share+Tech|Viga' rel='stylesheet' type='text/css'>
-		<style type="text/css">
-			html, body, h1, ul {
-				padding: 0px;
-				margin: 0px;
-			}
-			h1, h2{
-				font-family: 'Viga', sans-serif;
-			}
-			h1{
-				font-size: 4em
-			}
-			#mainNav {
-				position: fixed;
-				top: 0px;
-				right: 0px;
-				padding: 20px;
-				background-color: aqua;
-    			border-style: solid;
-    			border-width: 0px 0px 4px 4px;
-				border-bottom-left-radius: 16px;
-				box-shadow: -8px 8px 48px black;
-				font-family: 'Viga', sans-serif;
-			}
-			#videoNav li {
-				display: inline;
-				padding: 0px;
-				margin: 0px;
-			}
-			#mainNav li {
-				display: inline;
-				padding: 0px;
-				margin: 0px;
-			}
-			#dropVideoPlayer {
-				background-color: gray;
-			}
-			footer{
-				bottom: 0px;
-				right: 0px;
-				text-align: right;
-			}
-		</style>
+		<link href='css/base.css' rel='stylesheet' type='text/css'>
 		<script type="text/javascript">
-		document.addEventListener( 'DOMContentLoaded', onContentLoaded, false );
-		function onContentLoaded( event ){
-			//no legit media-querries for touch support, but this seems to work
-			//note: decided to just use click event for fallback
-			//var touchSupport = 'ontouchstart' in document.documentElement;
-		}
-		function onThumbDragStart( event ){
-			event.dataTransfer.setData( "Text", JSON.stringify( getThumbDataset( event.target ) ) );
-		} 
-		//using click event as fallback for dragdrop support issues with "touch" enabled devices
-		function onThumbClick( event ){
-			loadVideo( getThumbDataset( event.target ) );
-		}
-		function getThumbDataset( thumb ){
-			//dataset not working in IE11 so using getAttribute to manually create, probably a slicker way to do this
-			return thumb.dataset ? thumb.dataset : { "mp4":thumb.getAttribute('data-mp4'), "webm":thumb.getAttribute('data-webm') };
-		}
-		function allowDrop( event ){
-			event.preventDefault();
-		}
-		function onVideoDrop( event ){
-			event.preventDefault();
-			loadVideo( JSON.parse( event.dataTransfer.getData( "Text" ) ) );
-		}
-		function loadVideo( dataset ){
-			source_mp4.src = dataset.mp4;
-			source_webm.src = dataset.webm;  
-			video.load();
-			video.play();
-		}
+			document.addEventListener( 'DOMContentLoaded', onContentLoaded, false );
+			function onContentLoaded( event ){
+				//no legit media-querries for touch support, but this seems to work
+				//note: decided to just use click event for fallback
+				//var touchSupport = 'ontouchstart' in document.documentElement;
+			}
+			function onThumbDragStart( event ){
+				event.dataTransfer.setData( "Text", JSON.stringify( getThumbDataset( event.target ) ) );
+			} 
+			//using click event as fallback for dragdrop support issues with "touch" enabled devices
+			function onThumbClick( event ){
+				loadVideo( getThumbDataset( event.target ) );
+			}
+			function getThumbDataset( thumb ){ 
+				//dataset not working in IE11 so using getAttribute to manually create, probably a slicker way to do this
+				return thumb.dataset ? thumb.dataset : { "mp4":thumb.getAttribute('data-mp4'), "webm":thumb.getAttribute('data-webm') };
+			}
+			function allowDrop( event ){
+				event.preventDefault();
+			}
+			function onVideoDrop( event ){
+				event.preventDefault();
+				loadVideo( JSON.parse( event.dataTransfer.getData( "Text" ) ) );
+			}
+			function loadVideo( dataset ){
+				source_mp4.src = dataset.mp4;
+				source_webm.src = dataset.webm;  
+				video.load();
+				video.play();
+			}
 		</script>
 	</head>
 	<body>
 		<nav>
-			<h1>Ten-Twenty&lt;html&gt;Fiver</h1>
-			<ul id="mainNav">
-				<li><a href="#dropVideoPlayer">Drag and Drop Video Player</a></li>
-				<li><a href="#ffmpegSettings">FFmpeg Settings</a></li>
-				<li><a href="#">Corner Baby</a></li>
-			</ul>
+			<h1>&#161;&#161;webpage&#33;&#33;</h1>
+			<div id="mainNav">
+				<a id="mainMenuIcon" href="#mainMenu"></a>
+				<ul id="mainMenu">
+					<li><a href="#dndVideoPlayer">DnD Video Player</a></li>
+					<li><a href="#ffmpegSettings">FFmpeg Settings</a></li>
+					<li><a href="">Sdff Ytey</a></li>
+					<li><a href="">Vcdef Ffrghgh</a></li>
+				</ul>
+			</div>
 		</nav>
 		<section>
-			<article id="#dropVideoPlayer">
+			<article id="dndVideoPlayer">
 				<header>
 					<h2>Drag and Drop Video Player (sort of...)</h2>
 				</header>
@@ -108,12 +71,10 @@ Each thumbnail stores the mp4 and webm urls (in the dataset) which will be passe
 					<li><img class="videoThumb" ondragstart="onThumbDragStart(event)" draggable="true" onclick="onThumbClick(event)" 
 							data-mp4="content/Olay_Warrior.mp4" data-webm="content/Olay_Warrior.webm" src="content/Olay_Warrior.jpg"/></li>
 				</ul>
-				<figure>
 					<video id="video" ondrop="onVideoDrop(event)" ondragover="allowDrop(event)" controls="controls">
 						<source id="source_mp4" type="video/mp4"/>
 						<source id="source_webm" type="video/webm"/>
 		 			</video>
-	 			</figure>
 			</article>
 		</section>
 		<section id="ffmpegSettings">

@@ -1,0 +1,92 @@
+@charset "UTF-8";
+html, body, h1, ul {
+	padding: 0px;
+	margin: 0px;
+}
+h1, h2 {
+	font-family: 'Viga', sans-serif;
+}
+h1 {
+	font-size: 3em
+}
+@media not all and (min-width: 640px) {
+    #mainMenu {
+        display: none;
+    }
+    #mainMenuIcon {
+        display: block;
+    }
+}
+
+@media (min-width: 640px) {
+    #mainMenu {
+        display: block;
+    }
+    #mainMenuIcon {
+        display: none;
+    }
+}
+#mainNav {
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	padding: 20px;
+	background-repeat: no-repeat;
+	background-position:center; 
+	background-color: rgba( 200, 200, 200, 0.9 );
+ 	border-color: white;
+ 	border-style: solid;
+ 	border-width: 0px 0px 4px 4px;
+	border-bottom-left-radius: 16px;
+	box-shadow: 0px 0px 8px 8px rgba(0, 0, 0, 0.5);
+}
+#mainMenu li {
+	display: inline;
+}
+#mainMenu li a {
+	font-family: 'Viga', sans-serif;
+	font-size: 1em;
+	text-decoration: none;
+	color: white;
+	padding: 4px;
+	margin: 4px;
+	border: 1px dashed rgba(0, 0, 0, 0);
+}
+#mainMenu li a:hover {
+	border-color: white;
+}
+#mainMenuIcon {
+	width: 20px;
+	height: 20px;
+	background-image: url(../content/menuIcon.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	
+}
+#videoNav li {
+	display: inline;
+	padding: 0px;
+	margin: 0px;
+}
+#dndVideoPlayer {
+	background-color: red;
+	padding: 0px;
+	margin: 0px;
+	/*border-box?*/
+}
+#video {
+	padding: 0px;
+	margin: 0px;
+	width:100%;
+	height:100%;
+	max-width: 960px;
+	max-height: 720px;
+	min-width: 640px;
+	min-height: 480px;
+	background-color: blue;
+}
+footer{
+	bottom: 0px;
+	right: 0px;
+	text-align: right;
+}
