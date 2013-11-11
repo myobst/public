@@ -3,19 +3,60 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>FFVideo Tips</title>
-		<!-- script type="text/javascript" src="js/modernizr.custom.35650.js"></script -->
+		<link href='http://fonts.googleapis.com/css?family=Share+Tech|Viga' rel='stylesheet' type='text/css'>
+		<style type="text/css">
+			html, body, h1, ul {
+				padding: 0px;
+				margin: 0px;
+			}
+			h1, h2{
+				font-family: 'Viga', sans-serif;
+			}
+			h1{
+				font-size: 4em
+			}
+			#mainNav {
+				position: fixed;
+				top: 0px;
+				right: 0px;
+				padding: 20px;
+				background-color: aqua;
+    			border-style: solid;
+    			border-width: 0px 0px 4px 4px;
+				border-bottom-left-radius: 16px;
+				box-shadow: -8px 8px 48px black;
+				font-family: 'Viga', sans-serif;
+			}
+			#videoNav li {
+				display: inline;
+				padding: 0px;
+				margin: 0px;
+			}
+			#mainNav li {
+				display: inline;
+				padding: 0px;
+				margin: 0px;
+			}
+			#dropVideoPlayer {
+				background-color: gray;
+			}
+			footer{
+				bottom: 0px;
+				right: 0px;
+				text-align: right;
+			}
+		</style>
 		<script type="text/javascript">
 		document.addEventListener( 'DOMContentLoaded', onContentLoaded, false );
 		function onContentLoaded( event ){
 			//no legit media-querries for touch support, but this seems to work
 			//note: decided to just use click event for fallback
 			//var touchSupport = 'ontouchstart' in document.documentElement;
-
 		}
 		function onThumbDragStart( event ){
 			event.dataTransfer.setData( "Text", JSON.stringify( getThumbDataset( event.target ) ) );
 		} 
-		//using click event as fallback for dragdrop support issues with 'touch' enabled devices
+		//using click event as fallback for dragdrop support issues with "touch" enabled devices
 		function onThumbClick( event ){
 			loadVideo( getThumbDataset( event.target ) );
 		}
@@ -39,12 +80,23 @@
 		</script>
 	</head>
 	<body>
-	<header><h1>FFVideo Tips</h1></header>
+		<nav>
+			<h1>Ten-Twenty&lt;html&gt;Fiver</h1>
+			<ul id="mainNav">
+				<li><a href="#dropVideoPlayer">Drag and Drop Video Player</a></li>
+				<li><a href="#ffmpegSettings">FFmpeg Settings</a></li>
+				<li><a href="#">Corner Baby</a></li>
+			</ul>
+		</nav>
 		<section>
-			<article>
-				<h2>Drag Drop Player</h2>
-Drag a thumbnail to the video player. Each thumbnail stores the mp4 and webm urls (in the dataset) which will be set when dropped on the video element.
-				<ul>
+			<article id="#dropVideoPlayer">
+				<header>
+					<h2>Drag and Drop Video Player (sort of...)</h2>
+				</header>
+				<p>Drag a thumbnail to the video player for playback (or just click the thumbnail).
+Note that drag and drop does not work on touch devices, how this is rationalized is a beyond me. For touch enabled decives the thumbnails must be "clicked" so a click event handler is added as a fallback.
+Each thumbnail stores the mp4 and webm urls (in the dataset) which will be passed to the video source elements.</p>
+ 				<ul id="videoNav">
 					<li><img class="videoThumb" ondragstart="onThumbDragStart(event)" draggable="true" onclick="onThumbClick(event)" 
 							data-mp4="content/Brazil_Ilusoes_Optical_illusion_Viral.mp4" data-webm="content/Brazil_Ilusoes_Optical_illusion_Viral.webm" src="content/Brazil_Ilusoes_Optical_illusion_Viral.jpg"/></li>
 					<li><img class="videoThumb" ondragstart="onThumbDragStart(event)" draggable="true" onclick="onThumbClick(event)" 
@@ -56,16 +108,29 @@ Drag a thumbnail to the video player. Each thumbnail stores the mp4 and webm url
 					<li><img class="videoThumb" ondragstart="onThumbDragStart(event)" draggable="true" onclick="onThumbClick(event)" 
 							data-mp4="content/Olay_Warrior.mp4" data-webm="content/Olay_Warrior.webm" src="content/Olay_Warrior.jpg"/></li>
 				</ul>
-				<video id="video" ondrop="onVideoDrop(event)" ondragover="allowDrop(event)" controls="controls">
-					<source id="source_mp4" type="video/mp4"/>
-					<source id="source_webm" type="video/webm"/>
-	 			</video>
+				<figure>
+					<video id="video" ondrop="onVideoDrop(event)" ondragover="allowDrop(event)" controls="controls">
+						<source id="source_mp4" type="video/mp4"/>
+						<source id="source_webm" type="video/webm"/>
+		 			</video>
+	 			</figure>
 			</article>
 		</section>
-		<section>
+		<section id="ffmpegSettings">
 			<article>
-			FFMpeg is an open source high performance media encoder that can handle just about any media conversion, except for some proprietary encoders (note: most proprietary codec owners freely distribute the decoder for playback but the ecoder requires a license ). Below are some tips for it's usage.
-			Get it: You can build an executable yourself by getting the source directly from ffmpeg.org, but I would recommend finding a reputable build for your environment, for example: <a href="http://ffmpeg.zeranoe.com/builds/">http://ffmpeg.zeranoe.com/builds/</a>
+				<header>
+					<h2>FFmpeg Settings</h2>
+				</header>
+				<p>FFMpeg is an open source high performance media encoder that can handle just about any media conversion, except for some proprietary encoders (note: most proprietary codec owners freely distribute the decoder for playback but the ecoder requires a license ). Below are some tips for it's usage.
+			Get it: You can build an executable yourself by getting the source directly from ffmpeg.org, but I would recommend finding a reputable build for your environment, for example: <a href="http://ffmpeg.zeranoe.com/builds/">http://ffmpeg.zeranoe.com/builds/</a></p>
+				<div>::MP4
+%ffmpeg% -i %1 -pass 1 -vf "yadif=0:-1:1, hqdn3d, unsharp, scale=min(trunc((oh*dar+1)/2)*2\, 640):min(trunc((640/dar+1)/2)*2\, 360), setsar=1" -f mp4 -vcodec libx264 -pix_fmt yuv420p -vb 600k -preset slow -vprofile high -an -y NUL
+%ffmpeg% -i %1 -pass 2 -vf "yadif=0:-1:1, hqdn3d, unsharp, scale=min(trunc((oh*dar+1)/2)*2\, 640):min(trunc((640/dar+1)/2)*2\, 360), setsar=1" -f mp4 -vcodec libx264 -pix_fmt yuv420p -vb 600k -preset slow -vprofile high -ac 2 -ar 32k -ab 80k -movflags faststart "%output%%~n1.mp4"</div>
+				<div>::WebM
+%ffmpeg% -i %1 -pass 1 -vf "yadif=0:-1:1, hqdn3d, unsharp, scale=min(trunc((oh*dar+1)/2)*2\, 640):min(trunc((640/dar+1)/2)*2\, 360), setsar=1" -f webm -vcodec libvpx -pix_fmt yuv420p -vb 600k -quality good -an -y NUL
+%ffmpeg% -i %1 -pass 2 -vf "yadif=0:-1:1, hqdn3d, unsharp, scale=min(trunc((oh*dar+1)/2)*2\, 640):min(trunc((640/dar+1)/2)*2\, 360), setsar=1" -f webm -vcodec libvpx -pix_fmt yuv420p -vb 600k -quality good -ac 2 -ar 32k -ab 80k "%output%%~n1.webm"</div>
+				<div>::Square Thumb
+%ffmpeg% -i %1 -ss 3 -vframes 1 -vf "yadif=0:-1:1, hqdn3d, unsharp, scale=trunc(oh*dar)\:120, setsar=1, crop=120:120" -f image2 "%output%%~n1.jpg"</div>
 			</article>
 		</section>
 		<footer>footy</footer>
