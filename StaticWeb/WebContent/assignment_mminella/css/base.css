@@ -9,7 +9,7 @@ h1, h2 {
 h1 {
 	font-size: 3em
 }
-@media not all and (min-width: 640px) {
+@media not all and (min-width: 800px) {
     #mainMenu {
     	display: none;
     }
@@ -27,7 +27,7 @@ h1 {
     	display: none;
     }
 }
-@media (min-width: 640px) {
+@media all and (min-width: 800px) {
     #mainMenu {
         display: block;
     }
@@ -86,13 +86,11 @@ h1 {
 }
 #video {
 	padding: 0px;
-	margin: 0px;
-	width:100%;
-	height:100%;
+	margin: 0 auto;
 	max-width: 960px;
 	max-height: 720px;
-	min-width: 640px;
-	min-height: 480px;
+	min-width: 360px;
+	min-height: 240px;
 	background-color: blue;
 }
 footer{
