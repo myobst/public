@@ -11,13 +11,22 @@ h1 {
 }
 @media not all and (min-width: 640px) {
     #mainMenu {
-        display: none;
+    	display: none;
     }
     #mainMenuIcon {
         display: block;
     }
+	#mainMenu li {
+		display: block;
+		padding: 8px;
+	}
+    #mainMenu:target {
+    	display: block;
+    }
+    #mainMenu:target+#mainMenuIcon {
+    	display: none;
+    }
 }
-
 @media (min-width: 640px) {
     #mainMenu {
         display: block;
@@ -25,6 +34,9 @@ h1 {
     #mainMenuIcon {
         display: none;
     }
+	#mainMenu li {
+		display: inline;
+	}
 }
 #mainNav {
 	position: fixed;
@@ -39,9 +51,6 @@ h1 {
  	border-width: 0px 0px 4px 4px;
 	border-bottom-left-radius: 16px;
 	box-shadow: 0px 0px 8px 8px rgba(0, 0, 0, 0.5);
-}
-#mainMenu li {
-	display: inline;
 }
 #mainMenu li a {
 	font-family: 'Viga', sans-serif;
@@ -58,6 +67,7 @@ h1 {
 #mainMenuIcon {
 	width: 20px;
 	height: 20px;
+	float: right;
 	background-image: url(../content/menuIcon.png);
 	background-repeat: no-repeat;
 	background-position: center;
