@@ -9,7 +9,7 @@ h1, h2 {
 h1 {
 	font-size: 3em
 }
-@media not all and (min-width: 960px) {
+@media not all and (min-width: 1000px) {
     #mainMenu {
     	display: none;
     }
@@ -27,7 +27,7 @@ h1 {
     	display: none;
     }
 }
-@media all and (min-width: 960px) {
+@media all and (min-width: 1000px) {
     #mainMenu {
         display: block;
     }
@@ -55,7 +55,7 @@ h1 {
 }
 #mainMenu li a {
 	font-family: 'Viga', sans-serif;
-	font-size: 1em;
+	font-size: 1.5em;
 	text-decoration: none;
 	color: white;
 	padding: 4px;
