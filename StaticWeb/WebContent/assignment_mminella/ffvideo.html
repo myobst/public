@@ -87,7 +87,7 @@ Each thumbnail stores the mp4 and webm urls (in the dataset) which will be passe
 					<h2>Ffmpeg Settings</h2>
 				</header>
 				<ol class="codeView">
-					<li></li><li>::MP4</li>
+					<li>::MP4</li>
 					<li>ffmpeg -i "[INPUT FILE]" -pass 1 -vf "yadif=0:-1:1, hqdn3d, unsharp, scale=min(trunc((oh*dar+1)/2)*2\, 640):min(trunc((640/dar+1)/2)*2\, 360), setsar=1" -f mp4 -vcodec libx264 -pix_fmt yuv420p -vb 600k -preset slow -vprofile high -an -y NUL</li>
 					<li>ffmpeg -i "[INPUT FILE]" -pass 2 -vf "yadif=0:-1:1, hqdn3d, unsharp, scale=min(trunc((oh*dar+1)/2)*2\, 640):min(trunc((640/dar+1)/2)*2\, 360), setsar=1" -f mp4 -vcodec libx264 -pix_fmt yuv420p -vb 600k -preset slow -vprofile high -ac 2 -ar 32k -ab 80k -movflags faststart "[OUTPUT FILE].mp4"</li>
 					<li></li><li>::WebM</li>
