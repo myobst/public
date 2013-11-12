@@ -90,7 +90,6 @@ p {
 }
 #video {	
 	width: 100%;
-	object-fit: contain;
 	background-color: black;
 }
 .codeView {
