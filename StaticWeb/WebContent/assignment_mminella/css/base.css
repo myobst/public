@@ -44,7 +44,6 @@ h1 {
 }
 #mainNav {
 	position: fixed;
-	float: right;
 	top: 0px;
 	right: 0px;
 	padding: 20px;
