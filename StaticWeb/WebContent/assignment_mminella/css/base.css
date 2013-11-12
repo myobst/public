@@ -10,8 +10,9 @@ body {
 section {
 	margin: 0px 20px;
 	min-width: 600px;
-	background-color: teal;
+	background-color: #5e687b;
 	box-shadow: 0px 0px 16px 8px rgba( 0, 0, 0, 0.5 );
+	padding-bottom: 20px;
 }
 h1 {
 	padding: 0px 40px 8px 20px;
@@ -52,8 +53,8 @@ p {
 	box-shadow: 0px 0px 16px 8px rgba(0, 0, 0, 0.5);
 }
 #mainMenuIcon {
-	width: 40px;
-	height: 40px;
+	width: 48px;
+	height: 48px;
 	background-image: url(../content/menuIcon.png);
 	background-repeat: no-repeat;
 	background-position: center;
@@ -93,11 +94,19 @@ p {
 	background-color: black;
 }
 .codeView {
+	margin: 0px 20px;
 	font-family: 'Share+Tech', sans-serif;
-	color: white;
-	background-color: olive;
-	margin: 16px;
-	padding: 16px;
+	color: black;
+	background-color: rgb( 160, 160, 160 );
+}
+.codeView li {
+	padding: 4px 8px;
+}
+.codeView li:nth-child(odd) {
+    background-color: rgb( 176, 176, 176 );
+}
+.codeView li:nth-child(even) {
+    background-color: rgb( 192, 192, 192 );
 }
 footer{
 	display: inline;
