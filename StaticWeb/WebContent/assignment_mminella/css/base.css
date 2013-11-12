@@ -7,9 +7,13 @@ h1, h2 {
 	font-family: 'Viga', sans-serif;
 }
 h1 {
-	font-size: 3em
+	padding: 8px;
+	font-size: 3.25em
 }
 @media not all and (min-width: 1000px) {
+	body {
+		font-size: 150%;
+	}
     #mainMenu {
     	display: none;
     }
@@ -18,7 +22,7 @@ h1 {
     }
 	#mainMenu li {
 		display: block;
-		padding: 8px;
+		padding: 16px;
 	}
     #mainMenu:target {
     	display: block;
@@ -28,15 +32,15 @@ h1 {
     }
 }
 @media all and (min-width: 1000px) {
-    #mainMenu {
-        display: block;
-    }
     #mainMenuIcon {
         display: none;
     }
 	#mainMenu li {
 		display: inline;
 	}
+    #close{
+    	display: none;
+    }
 }
 #mainNav {
 	position: fixed;
@@ -51,23 +55,23 @@ h1 {
  	border-style: solid;
  	border-width: 0px 0px 4px 4px;
 	border-bottom-left-radius: 16px;
-	box-shadow: 0px 0px 8px 8px rgba(0, 0, 0, 0.5);
+	box-shadow: 0px 0px 16px 8px rgba(0, 0, 0, 0.5);
 }
 #mainMenu li a {
 	font-family: 'Viga', sans-serif;
-	font-size: 1.5em;
+	font-size: 1.25em;
 	text-decoration: none;
 	color: white;
-	padding: 4px;
+	padding: 4px 8px;
 	margin: 4px;
-	border: 1px dashed rgba(0, 0, 0, 0);
+	border: 2px dotted rgba(0, 0, 0, 0);
 }
 #mainMenu li a:hover {
 	border-color: white;
 }
 #mainMenuIcon {
-	width: 20px;
-	height: 20px;
+	width: 40px;
+	height: 40px;
 	float: right;
 	background-image: url(../content/menuIcon.png);
 	background-repeat: no-repeat;
