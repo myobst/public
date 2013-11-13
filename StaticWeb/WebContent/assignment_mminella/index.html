@@ -36,6 +36,25 @@
 				video.load();
 				video.play();
 			}
+			function onGuessInput( event ){
+				if( event.target.value.length > 1 ){
+					event.target.setAttribute( "list", "whoList" );
+					
+				}else{
+					event.target.setAttribute( "list", "" );
+				}
+			}
+			function onGuessChange( event ){
+				var value = event.target.value;
+				if( !value ) return;
+				
+				if( event.target.value == answer.value ){
+					alert( "Attaboy!!" );
+					
+				}else{
+					alert( "No attaboy for you!" );
+				}
+			}
 		</script>
 	</head>
 	<body>
@@ -45,7 +64,7 @@
 				<ul id="mainMenu"> 
 					<li><a href="#dndVideoPlayer">DnD Video Player</a></li>
 					<li><a href="#ffmpegSettings">FFmpeg Settings</a></li>
-					<li><a href="#footer">The Footer</a></li>
+					<li><a href="#guessWho">Guess Who</a></li>
 					<li><a id="close" href="#close">close</a></li>
 				</ul>
 				<a id="mainMenuIcon" href="#mainMenu"></a>
@@ -63,7 +82,7 @@ Each thumbnail stores the mp4 and webm urls (in the dataset) which will be passe
 	 				<ul id="videoNav">
 						<li><img class="videoThumb" ondragstart="onThumbDragStart(event)" draggable="true" onclick="onThumbClick(event)" 
 								data-mp4="content/Brazil_Ilusoes_Optical_illusion_Viral.mp4" data-webm="content/Brazil_Ilusoes_Optical_illusion_Viral.webm" 
-								src="content/Brazil_Ilusoes_Optical_illusion_Viral.jpg" alt="Brazil_Ilusoes_Optical_illusion_Viral"/></li>
+								src="content/Brazil_Ilusoes_Optical_illusion_Viral.jpg" alt="Brazil_ Ilusoes_Optical_illusion_Viral"/></li>
 						<li><img class="videoThumb" ondragstart="onThumbDragStart(event)" draggable="true" onclick="onThumbClick(event)" 
 								data-mp4="content/hd_other_sony_the_incredible_game.mp4" data-webm="content/hd_other_sony_the_incredible_game.webm" 
 								src="content/hd_other_sony_the_incredible_game.jpg" alt="hd_other_sony_the_incredible_game"/></li>
@@ -90,7 +109,7 @@ Each thumbnail stores the mp4 and webm urls (in the dataset) which will be passe
 		<section id="ffmpegSettings">
 			<article>
 				<header>
-					<h2>ffmpeg Settings</h2>
+					<h2>FFmpeg Settings</h2>
 				</header>
 				<ol class="codeView">
 					<li>::MP4</li>
@@ -100,8 +119,39 @@ Each thumbnail stores the mp4 and webm urls (in the dataset) which will be passe
 					<li>ffmpeg -i "[INPUT FILE]" -pass 1 -vf "yadif=0:-1:1, hqdn3d, unsharp, scale=min(trunc((oh*dar+1)/2)*2\, 640):min(trunc((640/dar+1)/2)*2\, 360), setsar=1" -f webm -vcodec libvpx -pix_fmt yuv420p -vb 600k -quality good -an -y NUL</li>
 					<li>ffmpeg -i "[INPUT FILE]" -pass 2 -vf "yadif=0:-1:1, hqdn3d, unsharp, scale=min(trunc((oh*dar+1)/2)*2\, 640):min(trunc((640/dar+1)/2)*2\, 360), setsar=1" -f webm -vcodec libvpx -pix_fmt yuv420p -vb 600k -quality good -ac 2 -ar 32k -ab 80k "[OUTPUT FILE].webm"</li>
 					<li></li><li>::Square Thumb</li>
-					<li>ffmpeg -i "[INPUT FILE]" -ss 3 -vframes 1 -vf "yadif=0:-1:1, hqdn3d, unsharp, scale=trunc(oh*dar)\:120, setsar=1, crop=120:120" -f image2 "[OUTPUT FILE].jpg"</li>
+					<li>ffmpeg -i "[INPUT FILE]" -ss 3 -vframes 1 -vf "yadif=0:-1:1, hqdn3d, unsharp, scale=trunc(oh*dar):120, setsar=1, crop=120:120" -f image2 "[OUTPUT FILE].jpg"</li>
 				</ol>
+			</article>
+		</section>
+		<section id="guessWho">
+			<article>
+				<header>
+					<h2>Guess Who</h2>
+				</header>
+				<p>Type at least 2 characters to see hints and suggestions of who it might be.</p>
+				<form>
+					<input id="guessInput" type="search" placeholder="start typing, chump..." autocomplete="on" list="whoList" 
+						oninput="onGuessInput(event)" onchange="onGuessChange(event)"></input>
+					<input type="reset" value="Reset!">
+				</form>
+				<datalist id="whoList">
+					<option value="Mulholland Drive"/>
+					<option value="Lost Highway"/>
+					<option value="Wild at Heart"/>
+					<option value="Twin Peaks"/>
+					<option value="Eraserhead"/>
+					<option value="The Elephant Man"/>
+					<option value="Dune"/>
+					<option value="Blue Velvet"/>
+					<option value="Willem Dafoe"/>
+					<option value="Patricia Arquette"/>
+					<option value="Isabella Rossellini"/>
+					<option value="Kyle MacLachlan"/>
+					<option value="Dennis Hopper"/>
+					<option value="Nicolas Cage"/>
+					<option value="Laura Dern"/>
+					<option id="answer" value="David Lynch"/>
+				</datalist>
 			</article>
 		</section>
 		<footer id="footer">&copy; Footy 2013</footer>
