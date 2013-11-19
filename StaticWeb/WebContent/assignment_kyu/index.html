@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	
+	<link type="text/css" rel="stylesheet" href="jquery-ui-1.10.3.custom/css/smoothness/jquery-ui-1.10.3.custom.min.css" />
+	<link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.min.css">
+	<link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.1.0/jquery.qtip.min.css" />
+	
+	
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script type="text/javascript" src="jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true&libraries=geometry"></script>
+	
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.jquery.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.1.0/jquery.qtip.min.js"></script>
+	
+	<script type="text/javascript">
+		var fromCity;
+		var toCity;
+		var distance = NaN;
+		var duration = NaN;
+		var minDays = 3;
+		var noPassportCountryCodes = [ "US", "CN" ];
+		var surchargeStates = [ "CA" ];
+		var surcharge = 500;
+		
+		$( document ).ready( function(){
+			$( "#fromCityInput" ).autocomplete( {
+				source: function( request, response ) {
+					$.ajax( {
+						url: "http://ws.geonames.org/searchJSON",
+						dataType: "jsonp",
+						data: { featureClass: "P", style: "medium", lang: "eng", maxRows: 12, name_startsWith: request.term },
+						success: function( data ) {
+							response( $.map( data.geonames, function( item ) {
+								return { label: item.name + ", " + item.adminName1 + " " + item.countryName, data: item };
+							} ) );
+						}
+					} );
+				},
+				select: fromCityUpdate,
+				change: fromCityUpdate,
+				minLength: 2 
+			} ); 
+			$( "#toCityInput" ).autocomplete( {
+				source: function( request, response ) {
+					$.ajax( {
+						url: "http://ws.geonames.org/searchJSON",
+						dataType: "jsonp",
+						data: { featureClass: "P", style: "medium", country: "US", lang: "eng", maxRows: 12, name_startsWith: request.term },
+						success: function( data ) {
+							response( $.map( data.geonames, function( item ) {
+								return { label: item.name + ", " + item.adminName1, data: item };
+							} ) );
+						}
+					} );
+				},
+				select: toCityUpdate,
+				change: toCityUpdate,
+				minLength: 2 
+			} );
+			$( "#fromDateInput" ).datepicker( { 
+				minDate: 0, 
+				onSelect: function( dateValue ){
+					var minToDate = new Date( dateValue );
+					minToDate.setDate( minToDate.getDate() + minDays );
+					$( "#toDateInput" ).datepicker( "option", "minDate", minToDate );
+					
+					updateDuration();
+				}
+			} );
+			$( "#toDateInput" ).datepicker( { 
+				minDate: minDays, 
+				onSelect: updateDuration
+			} ); 
+			/*$( "#firstClassInput, #withSpouseInput" ).button().click( function( event ){
+				if( event.target.checked ) $( this ).next().show();
+				else $( this ).next().hide();
+			} );*/
+			$( "#classSelect" ).change( function( event ) {
+				$( "#classDisplay" ).text( $( this ).val().toString() + " per mile/day" );
+				
+				updateTotal();
+			} );
+			$( "#totalHumanoidsInput" ).spinner( { 
+				min:1, 
+				max:10,
+				change: updateTotal,
+			} );
+			$( "#travelform" )[ 0 ].reset();
+			$( "input, select" ).addClass( "ui-corner-all" );
+		} );
+		function fromCityUpdate( event, ui ){
+			fromCity = ui.item ? ui.item.data : null;
+
+			if( fromCity ){
+				if( noPassportCountryCodes.indexOf( fromCity.countryCode ) > -1 ) $( "#fromCityMessage" ).text( "No Passport Required." );
+				else $( "#fromCityMessage" ).text( "Passport Required." );
+			}else{
+				$( "#fromCityMessage" ).text( "" );
+			}
+			
+			updateDistance();
+		}
+		function toCityUpdate( event, ui ){
+			toCity = ui.item ? ui.item.data : null;
+			
+			if( toCity && surchargeStates.indexOf( toCity.adminCode1 ) > -1 ){
+				$( "#surchargeMessage" ).text( "$" + surcharge + " surcharge for " + toCity.adminName1 );
+			}else{
+				$( "#surchargeMessage" ).text( "" );
+			}
+			updateDistance();
+		}
+		function updateDistance(){
+			if( fromCity && toCity ){
+				var fromLatLng = new google.maps.LatLng( fromCity.lat, fromCity.lng );
+				var toLatLng = new google.maps.LatLng( toCity.lat, toCity.lng );
+				distance = google.maps.geometry.spherical.computeDistanceBetween( fromLatLng, toLatLng ) * 0.000621371;
+				$( "#distanceDisplay" ).text( parseFloat( distance ).toFixed( 2 ) + " miles" );
+			}else{
+				distance = NaN;
+				$( "#distanceDisplay" ).text( "" );
+			}
+			updateTotal();
+		}
+		function updateDuration(){
+			var fromDate = $( "#fromDateInput" ).datepicker( "getDate" );
+			var toDate = $( "#toDateInput" ).datepicker( "getDate" );
+			if( fromDate && toDate ){
+				duration = Math.round( ( toDate - fromDate ) / 86400000 );
+				$( "#durationDisplay" ).text( duration.toString() + " days" );
+			}else{
+				duration = NaN;
+				$( "#durationDisplay" ).text( "" );
+			}
+			updateTotal();
+		}
+		function updateTotal(){
+			if( !distance || !duration ) return;
+			var classVal = $( "#classSelect" ).val();
+			var totalHumanoids = $( "#totalHumanoidsInput" ).val();
+
+		}
+	</script>
+	<style type="text/css">
+		body {
+			font-size: 1.25em;
+			background-color: #eeeeee;
+		}
+		.labelCol {
+			margin: 4px;
+ 			padding: 0px;
+			display: inline-block;
+			width: 30%;
+			text-align: right;
+			float: left;
+		}
+		.inputCol {
+ 			margin: 4px; 
+ 			padding: 4px;
+			display: inline-block;
+			box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			width: 300px;
+			font-size: 1em;
+		}
+		.messageCol {
+			display: inline-block;
+		}		
+		.totalCol {
+			display: inline-block;
+			float: right;
+			width: 30%;
+		}
+		div.formItem {
+ 			margin: 4px;
+ 			padding: 4px;
+		}
+	</style>
+</head>
+<body>
+	<form id="travelform">
+			<div class="formItem">
+				<label class="labelCol" for="lastNameLabel">Last Name:</label>
+				<input class="inputCol" type="text" id="LastNameInput" value="" />
+				<div class="totalCol" id="firstClassSurchrage">l name</div>
+			</div>
+			<div class="formItem">
+				<label class="labelCol" for="firstNameLabel">First Name:</label>
+				<input class="inputCol" type="text" id="firstNameInput" value="" />
+				<div class="totalCol" id="firstClassSurchrage">f name</div>
+			</div>
+			<div class="formItem" id="fromCityDisplay">
+				<label class="labelCol" for="fromCityLabel">From City:</label>
+				<input class="inputCol" type="text" id="fromCityInput" value="" />
+				<div class="messageCol" id="fromCityMessage"></div>
+			</div>
+			<div class="formItem">
+				<label class="labelCol" for="toCityInput">To City:</label>
+				<input class="inputCol" type="text" id="toCityInput" value="" />
+				<div class="messageCol" id="surchargeMessage"></div>
+				<div class="totalCol" id="distanceDisplay"></div>
+			</div>
+			
+<!-- 			<div class="formItem"> -->
+<!-- 				<label class="labelCol" for="distanceDisplay">Distance:</label> -->
+<!-- 				<span class="inputCol" id="distanceDisplay"></span> -->
+<!-- 			</div> -->
+			
+			<div class="formItem">
+				<label class="labelCol" for="fromDateInput">From Date:</label>
+				<input class="inputCol" type="text" class="date" id="fromDateInput" readonly="readonly" />
+			</div>
+			
+			<div class="formItem">
+				<label class="labelCol" for="toDateInput">To Date:</label>
+				<input class="inputCol" type="text" class="date" id="toDateInput" readonly="readonly" />
+				<div class="totalCol" id="durationDisplay"></div>
+			</div>
+			
+<!-- 			<div class="formItem"> -->
+<!-- 				<label class="labelCol" for="durationDisplay">Duration:</label> -->
+<!-- 				<span class="inputCol" id="durationDisplay"></span> -->
+<!-- 			</div> -->
+			
+			<div class="formItem">
+				<label class="labelCol" for="classSelect">First Class:</label>
+				<select class="inputCol" id="classSelect">
+					<option value="0.99">Economy</option>
+					<option value="1.99">Business</option>
+					<option value="2.99">First</option>
+				</select>
+				<div class="totalCol" id="classDisplay"></div>
+			</div>
+			
+			<div class="formItem">
+				<label class="labelCol" for="totalHumanoidsInput">Total Humanoids:</label>
+				<input class="inputCol" type="text" id="totalHumanoidsInput" value="1" readonly="readonly" />
+				<!-- div class="message" id="withSpouseSurchrage">All costs doubled.</div -->
+			</div>
+	</form>
+	<div id="total"></div>
+</body>
+</html>
