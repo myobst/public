@@ -19,15 +19,28 @@
 	<script type="text/javascript">
 		var fromCity;
 		var toCity;
-		var distance = NaN;
-		var duration = NaN;
+		var classValue;
+		var distance;
+		var duration;
 		var minDays = 3;
 		var noPassportCountryCodes = [ "US", "CN" ];
 		var surchargeStates = [ "CA" ];
 		var surcharge = 500;
+		var totalXHR;
 		
 		$( document ).ready( function(){
+			$( "#lastNameInput" ).change( function(){
+				if( $( this ).val().length == 0 ) $( "#lastNameMessage" ).text( "Last name required." ).addClass( "errorMessage" );
+				else $( "#lastNameMessage" ).text( "" ).removeClass( "errorMessage" );
+			} );
+			$( "#firstNameInput" ).change( function(){
+				if( $( this ).val().length == 0 ) $( "#firstNameMessage" ).text( "First name required." ).addClass( "errorMessage" );
+				else $( "#firstNameMessage" ).text( "" ).removeClass( "errorMessage" );
+			} );
 			$( "#fromCityInput" ).autocomplete( {
+				minLength: 2,
+				select: updateFromCity,
+				change: updateFromCity,
 				source: function( request, response ) {
 					$.ajax( {
 						url: "http://ws.geonames.org/searchJSON",
@@ -35,16 +48,16 @@
 						data: { featureClass: "P", style: "medium", lang: "eng", maxRows: 12, name_startsWith: request.term },
 						success: function( data ) {
 							response( $.map( data.geonames, function( item ) {
-								return { label: item.name + ", " + item.adminName1 + " " + item.countryName, data: item };
+								return { label: item.name + ", " + item.adminName1 + " " + item.countryCode, data: item };
 							} ) );
 						}
 					} );
-				},
-				select: fromCityUpdate,
-				change: fromCityUpdate,
-				minLength: 2 
-			} ); 
+				}
+			} );
 			$( "#toCityInput" ).autocomplete( {
+				minLength: 2,
+				select: updateToCity,
+				change: updateToCity,
 				source: function( request, response ) {
 					$.ajax( {
 						url: "http://ws.geonames.org/searchJSON",
@@ -56,13 +69,11 @@
 							} ) );
 						}
 					} );
-				},
-				select: toCityUpdate,
-				change: toCityUpdate,
-				minLength: 2 
+				}
 			} );
 			$( "#fromDateInput" ).datepicker( { 
 				minDate: 0, 
+				dateFormat: "MM d, yy",
 				onSelect: function( dateValue ){
 					var minToDate = new Date( dateValue );
 					minToDate.setDate( minToDate.getDate() + minDays );
@@ -73,88 +84,130 @@
 			} );
 			$( "#toDateInput" ).datepicker( { 
 				minDate: minDays, 
+				dateFormat: "MM d, yy",
 				onSelect: updateDuration
 			} ); 
-			/*$( "#firstClassInput, #withSpouseInput" ).button().click( function( event ){
-				if( event.target.checked ) $( this ).next().show();
-				else $( this ).next().hide();
-			} );*/
 			$( "#classSelect" ).change( function( event ) {
-				$( "#classDisplay" ).text( $( this ).val().toString() + " per mile/day" );
+				classValue = $( this ).val();
+				
+				if( classValue ){
+					$( "#classMessage" ).text( "" ).removeClass( "errorMessage" );
+					$( "#classDisplay" ).text( classValue.toString() + " per mile day" );
+				}else{
+					$( "#classMessage" ).text( "Class required" ).addClass( "errorMessage" );
+					$( "#classDisplay" ).text( "" );
+				}
 				
 				updateTotal();
 			} );
-			$( "#totalHumanoidsInput" ).spinner( { 
-				min:1, 
-				max:10,
-				change: updateTotal,
+			$( "#travelersInput" ).spinner( { 
+				min: 1, 
+				max: 10,
+				stop: updateTotal
 			} );
 			$( "#travelform" )[ 0 ].reset();
 			$( "input, select" ).addClass( "ui-corner-all" );
 		} );
-		function fromCityUpdate( event, ui ){
-			fromCity = ui.item ? ui.item.data : null;
+		function updateFromCity( event, ui ){
+			var _fromCity = ui.item ? ui.item.data : null;
+			if( _fromCity && fromCity && _fromCity.geonameId == fromCity.geonameId ) return;
 
+			fromCity = _fromCity;
 			if( fromCity ){
-				if( noPassportCountryCodes.indexOf( fromCity.countryCode ) > -1 ) $( "#fromCityMessage" ).text( "No Passport Required." );
-				else $( "#fromCityMessage" ).text( "Passport Required." );
+				if( noPassportCountryCodes.indexOf( fromCity.countryCode ) > -1 ) $( "#fromCityMessage" ).text( "No Passport Required" ).removeClass( "errorMessage" );
+				else $( "#fromCityMessage" ).text( "Passport Required" ).removeClass( "errorMessage" );
 			}else{
-				$( "#fromCityMessage" ).text( "" );
+				$( this ).val( $( this ).val().split( "," )[ 0 ] );
+				$( "#fromCityMessage" ).text( "Departure city required" ).addClass( "errorMessage" );
 			}
-			
 			updateDistance();
 		}
-		function toCityUpdate( event, ui ){
-			toCity = ui.item ? ui.item.data : null;
-			
-			if( toCity && surchargeStates.indexOf( toCity.adminCode1 ) > -1 ){
-				$( "#surchargeMessage" ).text( "$" + surcharge + " surcharge for " + toCity.adminName1 );
+		function updateToCity( event, ui ){
+			var _toCity = ui.item ? ui.item.data : null;
+			if( _toCity && toCity && _toCity.geonameId == toCity.geonameId ) return;
+
+			toCity = _toCity;
+			if( toCity ){
+				if( surchargeStates.indexOf( toCity.adminCode1 ) > -1 ) $( "#toCityMessage" ).text( "$" + surcharge + " surcharge for " + toCity.adminName1 ).removeClass( "errorMessage" );
+				else $( "#toCityMessage" ).text( "" ).removeClass( "errorMessage" );
 			}else{
-				$( "#surchargeMessage" ).text( "" );
+				$( this ).val( $( this ).val().split( "," )[ 0 ] );
+				$( "#toCityMessage" ).text( "Destination city required" ).addClass( "errorMessage" );
 			}
 			updateDistance();
 		}
 		function updateDistance(){
 			if( fromCity && toCity ){
-				var fromLatLng = new google.maps.LatLng( fromCity.lat, fromCity.lng );
-				var toLatLng = new google.maps.LatLng( toCity.lat, toCity.lng );
-				distance = google.maps.geometry.spherical.computeDistanceBetween( fromLatLng, toLatLng ) * 0.000621371;
-				$( "#distanceDisplay" ).text( parseFloat( distance ).toFixed( 2 ) + " miles" );
+				_distance = google.maps.geometry.spherical.computeDistanceBetween( new google.maps.LatLng( fromCity.lat, fromCity.lng ), new google.maps.LatLng( toCity.lat, toCity.lng ) ) * 0.000621371;
+				$( "#distanceDisplay" ).text( parseFloat( _distance ).toFixed( 2 ) + " miles" );
 			}else{
-				distance = NaN;
+				_distance = null;
 				$( "#distanceDisplay" ).text( "" );
 			}
+			if( _distance == distance ) return;
+			
+			distance = _distance;
 			updateTotal();
 		}
 		function updateDuration(){
 			var fromDate = $( "#fromDateInput" ).datepicker( "getDate" );
 			var toDate = $( "#toDateInput" ).datepicker( "getDate" );
 			if( fromDate && toDate ){
-				duration = Math.round( ( toDate - fromDate ) / 86400000 );
-				$( "#durationDisplay" ).text( duration.toString() + " days" );
+				_duration = Math.round( ( toDate - fromDate ) / 86400000 );
+				$( "#durationDisplay" ).text( _duration.toString() + " days" );
 			}else{
-				duration = NaN;
+				_duration = null;
 				$( "#durationDisplay" ).text( "" );
 			}
+			if( _duration == duration ) return;
+			
+			duration = _duration;
 			updateTotal();
 		}
 		function updateTotal(){
-			if( !distance || !duration ) return;
-			var classVal = $( "#classSelect" ).val();
-			var totalHumanoids = $( "#totalHumanoidsInput" ).val();
+			if( totalXHR && totalXHR.readyState != 4 && totalXHR.readyState != 0 ){
+				console.log( "aborting" );
+				totalXHR.abort();
+			}
+			
+			if( !distance || !duration || !classValue ){
+                $( "#totalDisplay" ).removeClass( "loading" );
+				$( "#totalDisplay" ).text( "--" );
+				
+				return;
+			}
 
+			var submitData = "distance=" + distance + "&duration=" + duration + "&classValue=" + classValue + "&travelers=" + $( "#travelersInput" ).val();
+			if( surchargeStates.indexOf( toCity.adminCode1 ) > -1 ) submitData += "&surcharge=" + surcharge;
+
+			console.log( "sending" );
+			totalXHR = $.ajax( {
+				url: "http://localhost/slop/Handler.ashx",
+				dataType: "jsonp",
+				data: submitData, 
+				beforeSend: function(){
+					$( "#totalDisplay" ).text( "" );
+                    $( "#totalDisplay" ).addClass( "loading" );
+				},
+				success: function( resultData ) {
+					console.log( "processing" );
+	                $( "#totalDisplay" ).removeClass( "loading" );
+					$( "#totalDisplay" ).text( "$" +( resultData.total ).toFixed( 2 ) ); 
+				}
+			} );
 		}
 	</script>
 	<style type="text/css">
 		body {
 			font-size: 1.25em;
 			background-color: #eeeeee;
+			min-width: 640px;
 		}
 		.labelCol {
 			margin: 4px;
- 			padding: 0px;
+ 			padding: 4px;
 			display: inline-block;
-			width: 30%;
+			width: 15%;
 			text-align: right;
 			float: left;
 		}
@@ -162,23 +215,40 @@
  			margin: 4px; 
  			padding: 4px;
 			display: inline-block;
-			box-sizing: border-box;
-			-moz-box-sizing: border-box;
-			-webkit-box-sizing: border-box;
-			width: 300px;
+ 			box-sizing: border-box;
+ 			-moz-box-sizing: border-box;
+ 			-webkit-box-sizing: border-box;
+			width: 40%;
+			max-width: 400px;
 			font-size: 1em;
 		}
 		.messageCol {
+			margin: 4px;
+ 			padding: 4px;
 			display: inline-block;
+			width: 10%;
 		}		
 		.totalCol {
+			margin: 4px 100px 4px 4px;
+ 			padding: 4px;
 			display: inline-block;
-			float: right;
-			width: 30%;
+			float: right; 
+			width: 20%;
+			border-bottom: 1px dashed grey;
+			color: green;
 		}
 		div.formItem {
- 			margin: 4px;
+			margin: 4px;
  			padding: 4px;
+		}
+		.errorMessage {
+			color: red;
+		}
+		.loading {
+			display: block;
+ 			background: url(circle.gif) no-repeat;
+			min-width: 32px;
+			min-height: 32px;
 		}
 	</style>
 </head>
@@ -186,13 +256,13 @@
 	<form id="travelform">
 			<div class="formItem">
 				<label class="labelCol" for="lastNameLabel">Last Name:</label>
-				<input class="inputCol" type="text" id="LastNameInput" value="" />
-				<div class="totalCol" id="firstClassSurchrage">l name</div>
+				<input class="inputCol" type="text" id="lastNameInput" value="" />
+				<div class="messageCol" id="lastNameMessage"></div>
 			</div>
 			<div class="formItem">
 				<label class="labelCol" for="firstNameLabel">First Name:</label>
 				<input class="inputCol" type="text" id="firstNameInput" value="" />
-				<div class="totalCol" id="firstClassSurchrage">f name</div>
+				<div class="messageCol" id="firstNameMessage"></div>
 			</div>
 			<div class="formItem" id="fromCityDisplay">
 				<label class="labelCol" for="fromCityLabel">From City:</label>
@@ -202,45 +272,33 @@
 			<div class="formItem">
 				<label class="labelCol" for="toCityInput">To City:</label>
 				<input class="inputCol" type="text" id="toCityInput" value="" />
-				<div class="messageCol" id="surchargeMessage"></div>
+				<div class="messageCol" id="toCityMessage"></div>
 				<div class="totalCol" id="distanceDisplay"></div>
 			</div>
-			
-<!-- 			<div class="formItem"> -->
-<!-- 				<label class="labelCol" for="distanceDisplay">Distance:</label> -->
-<!-- 				<span class="inputCol" id="distanceDisplay"></span> -->
-<!-- 			</div> -->
-			
 			<div class="formItem">
 				<label class="labelCol" for="fromDateInput">From Date:</label>
 				<input class="inputCol" type="text" class="date" id="fromDateInput" readonly="readonly" />
 			</div>
-			
 			<div class="formItem">
 				<label class="labelCol" for="toDateInput">To Date:</label>
 				<input class="inputCol" type="text" class="date" id="toDateInput" readonly="readonly" />
 				<div class="totalCol" id="durationDisplay"></div>
 			</div>
-			
-<!-- 			<div class="formItem"> -->
-<!-- 				<label class="labelCol" for="durationDisplay">Duration:</label> -->
-<!-- 				<span class="inputCol" id="durationDisplay"></span> -->
-<!-- 			</div> -->
-			
 			<div class="formItem">
 				<label class="labelCol" for="classSelect">First Class:</label>
 				<select class="inputCol" id="classSelect">
+					<option value="">Select...</option>
 					<option value="0.99">Economy</option>
 					<option value="1.99">Business</option>
 					<option value="2.99">First</option>
 				</select>
+				<div class="messageCol" id="classMessage"></div>
 				<div class="totalCol" id="classDisplay"></div>
 			</div>
-			
 			<div class="formItem">
-				<label class="labelCol" for="totalHumanoidsInput">Total Humanoids:</label>
-				<input class="inputCol" type="text" id="totalHumanoidsInput" value="1" readonly="readonly" />
-				<!-- div class="message" id="withSpouseSurchrage">All costs doubled.</div -->
+				<label class="labelCol" for="travelersInput">Travelers:</label>
+				<input class="inputCol" type="text" id="travelersInput" value="1" readonly="readonly" />
+				<div class="totalCol" id="totalDisplay"></div>
 			</div>
 	</form>
 	<div id="total"></div>
