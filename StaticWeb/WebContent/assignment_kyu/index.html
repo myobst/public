@@ -177,7 +177,8 @@
 
 			console.log( "sending" );
 			totalXHR = $.ajax( {
-				url: "Handler.ashx",
+				url: "http://myobst.easycgi.com/slop/Handler.ashx",
+// 				url: "Handler.ashx",
 				dataType: "jsonp",
 				data: submitData, 
 				beforeSend: function(){
