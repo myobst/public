@@ -2,19 +2,14 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Insert title here</title>
+	<title>IPPS</title>
 	
-	<link type="text/css" rel="stylesheet" href="jquery-ui-1.10.3.custom/css/smoothness/jquery-ui-1.10.3.custom.min.css" />
-	<link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.min.css">
-	<link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.1.0/jquery.qtip.min.css" />
-	
+	<link type="text/css" rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+	<link type="text/css" rel="stylesheet" href="index.css" />
 	
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
-	<script type="text/javascript" src="jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true&libraries=geometry"></script>
-	
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.jquery.min.js"></script>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.1.0/jquery.qtip.min.js"></script>
 	
 	<script type="text/javascript">
 		var fromCity;
@@ -182,7 +177,7 @@
 
 			console.log( "sending" );
 			totalXHR = $.ajax( {
-				url: "http://localhost/slop/Handler.ashx",
+				url: "Handler.ashx",
 				dataType: "jsonp",
 				data: submitData, 
 				beforeSend: function(){
@@ -197,62 +192,9 @@
 			} );
 		}
 	</script>
-	<style type="text/css">
-		body {
-			font-size: 1.25em;
-			background-color: #eeeeee;
-			min-width: 640px;
-		}
-		.labelCol {
-			margin: 4px;
- 			padding: 4px;
-			display: inline-block;
-			width: 15%;
-			text-align: right;
-			float: left;
-		}
-		.inputCol {
- 			margin: 4px; 
- 			padding: 4px;
-			display: inline-block;
- 			box-sizing: border-box;
- 			-moz-box-sizing: border-box;
- 			-webkit-box-sizing: border-box;
-			width: 40%;
-			max-width: 400px;
-			font-size: 1em;
-		}
-		.messageCol {
-			margin: 4px;
- 			padding: 4px;
-			display: inline-block;
-			width: 10%;
-		}		
-		.totalCol {
-			margin: 4px 100px 4px 4px;
- 			padding: 4px;
-			display: inline-block;
-			float: right; 
-			width: 20%;
-			border-bottom: 1px dashed grey;
-			color: green;
-		}
-		div.formItem {
-			margin: 4px;
- 			padding: 4px;
-		}
-		.errorMessage {
-			color: red;
-		}
-		.loading {
-			display: block;
- 			background: url(circle.gif) no-repeat;
-			min-width: 32px;
-			min-height: 32px;
-		}
-	</style>
 </head>
 <body>
+<h2>Intra-Planetary Projection Services</h2>
 	<form id="travelform">
 			<div class="formItem">
 				<label class="labelCol" for="lastNameLabel">Last Name:</label>
